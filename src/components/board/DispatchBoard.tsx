@@ -5,6 +5,7 @@ type Props = {
   compact?: boolean;
   showIntent?: boolean;
   showAlerts?: boolean;
+  showReason?: boolean;
 };
 
 export function DispatchBoard({
@@ -12,6 +13,7 @@ export function DispatchBoard({
   compact = false,
   showIntent = true,
   showAlerts = true,
+  showReason = true,
 }: Props) {
   const {
     board,
@@ -126,15 +128,15 @@ export function DispatchBoard({
         </div>
       ) : null}
 
-      {suggestionVisible ? (
+      {showReason && suggestionVisible ? (
         <p className="knowledge-reason">{suggestion.reason}</p>
       ) : null}
-      {returnDecision === "accepted" ? (
+      {showReason && returnDecision === "accepted" ? (
         <p className="knowledge-reason">
           佐野 → 深谷を載せました。向きが同じだったため候補に出しています。休息の確認は残ります。
         </p>
       ) : null}
-      {returnDecision === "rejected" ? (
+      {showReason && returnDecision === "rejected" ? (
         <p className="knowledge-reason is-muted">
           候補は出しました。載せるかは人が決めています。
         </p>

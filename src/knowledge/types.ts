@@ -32,6 +32,7 @@ export type Order = {
   vehicleNote: string | null;
   surchargeListed: boolean | null;
   lane: string;
+  shipper: string;
   isReturnCandidate?: boolean;
 };
 

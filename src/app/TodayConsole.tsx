@@ -3,7 +3,7 @@ import { DispatchBoard } from "../components/board/DispatchBoard";
 import { OrderDetail } from "../components/orders/OrderDetail";
 import { OrderInbox } from "../components/orders/OrderInbox";
 import { LeisurePanel } from "../components/orders/LeisurePanel";
-import { ThisTimeCard } from "../components/orders/ThisTimeCard";
+import { DispatchDesk } from "../components/orders/DispatchDesk";
 
 const TABS: { id: ConsoleTab; label: string }[] = [
   { id: "today", label: "今日" },
@@ -61,8 +61,8 @@ export function TodayConsole({ inFlow = true }: Props) {
       </nav>
 
       {consoleTab === "today" ? (
-        <div className="console-body">
-          <div className="stat-row">
+        <div className="console-body is-desk">
+          <div className="stat-row is-slim">
             <div className="stat">
               <b>{openCount}</b>
               <span>未処理</span>
@@ -81,13 +81,7 @@ export function TodayConsole({ inFlow = true }: Props) {
             </div>
           </div>
 
-          <div className="console-section">
-            <DispatchBoard interactive={false} compact showIntent={false} />
-          </div>
-
-          <div className="console-section">
-            <ThisTimeCard />
-          </div>
+          <DispatchDesk />
 
           {(dutyAlerts.length > 0 || faxAlerts.length > 0) ? (
             <div className="console-section">

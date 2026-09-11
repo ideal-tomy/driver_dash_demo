@@ -31,6 +31,7 @@ type DemoContextValue = {
   consoleTab: ConsoleTab;
   setConsoleTab: (t: ConsoleTab) => void;
   orders: Order[];
+  deskOrders: Order[];
   pastCases: PastCase[];
   fleet: FleetSnapshot;
   rules: RulesSnapshot;
@@ -103,6 +104,19 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       );
   }, [allOrders, confirmedIds]);
 
+  const deskOrders = useMemo(() => {
+    return allOrders.map((o) =>
+      confirmedIds.includes(o.id)
+        ? {
+            ...o,
+            needsConfirm: false,
+            status: "done" as const,
+            confirmNote: null,
+          }
+        : o,
+    );
+  }, [allOrders, confirmedIds]);
+
   const detailOrder =
     allOrders.find((o) => o.id === "ord-1058695") ?? allOrders[0] ?? null;
   const similarForDetail = useMemo(
@@ -149,6 +163,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     consoleTab,
     setConsoleTab,
     orders,
+    deskOrders,
     pastCases,
     fleet,
     rules,
