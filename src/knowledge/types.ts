@@ -65,6 +65,7 @@ export type FleetSnapshot = {
     ruleId: string;
     text: string;
   };
+  remainingReason: string;
 };
 
 export type SegmentKind = "run" | "idle" | "sug";
@@ -96,6 +97,7 @@ export type ReturnSuggestion = {
   startHour: number;
   endHour: number;
   ruleId: string;
+  reason: string;
 };
 
 export type BoardSnapshot = {

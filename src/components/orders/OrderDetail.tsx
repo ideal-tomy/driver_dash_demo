@@ -80,7 +80,7 @@ export function OrderDetail() {
       ))}
       <div className="warn">
         <b>残り1台になります</b>
-        {fleet.restWarning.text}
+        {fleet.remainingReason}
       </div>
       <details className="intent" style={{ margin: "0 10px 12px" }}>
         <summary>この画面の意図</summary>

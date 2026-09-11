@@ -3,6 +3,7 @@ import { DispatchBoard } from "../components/board/DispatchBoard";
 import { OrderDetail } from "../components/orders/OrderDetail";
 import { OrderInbox } from "../components/orders/OrderInbox";
 import { LeisurePanel } from "../components/orders/LeisurePanel";
+import { ThisTimeCard } from "../components/orders/ThisTimeCard";
 
 const TABS: { id: ConsoleTab; label: string }[] = [
   { id: "today", label: "今日" },
@@ -82,6 +83,10 @@ export function TodayConsole({ inFlow = true }: Props) {
 
           <div className="console-section">
             <DispatchBoard interactive={false} compact showIntent={false} />
+          </div>
+
+          <div className="console-section">
+            <ThisTimeCard />
           </div>
 
           {(dutyAlerts.length > 0 || faxAlerts.length > 0) ? (

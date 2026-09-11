@@ -26,6 +26,7 @@ export function createMemoryKnowledgeRepository(): KnowledgeRepository {
       ...fleet,
       filters: fleet.filters.map((f) => ({ ...f })),
       restWarning: { ...fleet.restWarning },
+      remainingReason: fleet.remainingReason,
     }),
     getBoard: () => ({
       ...board,

@@ -111,6 +111,7 @@
     "label": "帰り荷 佐野 → 深谷",
     "startHour": 16,
     "endHour": 21,
-    "ruleId": "RETURN-MATCH"
+    "ruleId": "RETURN-MATCH",
+    "reason": "ウィング①が空で戻る時間に、東北担当の佐野 → 深谷。向きが同じ。載せるかは人。"
   }
 }

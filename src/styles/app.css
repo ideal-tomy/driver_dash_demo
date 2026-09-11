@@ -956,6 +956,40 @@ table.kv td {
   padding-top: 8px;
 }
 
+.knowledge-reason {
+  margin: 0 10px 12px;
+  padding: 12px 12px 11px;
+  border-left: 3px solid #d9480f;
+  background: #fff8f5;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #1f1f1d;
+  font-weight: 600;
+}
+
+.knowledge-reason.is-muted {
+  border-left-color: #dcdcd6;
+  background: #f7f7f4;
+  font-weight: 500;
+  color: #4a4a45;
+}
+
+.knowledge-card .knowledge-lead {
+  margin: 0;
+  padding: 10px 12px 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #1f1f1d;
+}
+
+.knowledge-remain {
+  margin: 0;
+  padding: 10px 12px 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #1f1f1d;
+}
+
 @media (max-width: 520px) {
   .stat-row {
     grid-template-columns: repeat(2, 1fr);
