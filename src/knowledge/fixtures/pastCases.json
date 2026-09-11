@@ -1,0 +1,77 @@
+[
+  {
+    "id": "case-01",
+    "route": { "from": "結城", "to": "諏訪" },
+    "vehicleType": "10t ウィング",
+    "date": "2026/06/18",
+    "fare": 88000,
+    "surcharge": 6000,
+    "relatedOrderId": "ord-1058695"
+  },
+  {
+    "id": "case-02",
+    "route": { "from": "筑西", "to": "岡谷" },
+    "vehicleType": "10t ウィング",
+    "date": "2026/04/09",
+    "fare": 92000,
+    "surcharge": 5000,
+    "relatedOrderId": "ord-1058695"
+  },
+  {
+    "id": "case-03",
+    "route": { "from": "結城", "to": "松本" },
+    "vehicleType": "10t ウィング",
+    "date": "2025/12/22",
+    "fare": 86000,
+    "surcharge": 0,
+    "relatedOrderId": "ord-1058695"
+  },
+  {
+    "id": "leisure-01",
+    "route": { "from": "熊谷", "to": "熊谷" },
+    "vehicleType": "大型ウィング",
+    "date": "2026/03/14",
+    "fare": null,
+    "surcharge": null,
+    "relatedOrderId": null,
+    "leisure": {
+      "kind": "遊技機入替",
+      "machines": 80,
+      "staff": "5名（自社2・外部3）",
+      "hours": 7,
+      "sourcing": "人材会社1社に依頼"
+    }
+  },
+  {
+    "id": "leisure-02",
+    "route": { "from": "太田", "to": "太田" },
+    "vehicleType": "大型ウィング",
+    "date": "2025/11/08",
+    "fare": null,
+    "surcharge": null,
+    "relatedOrderId": null,
+    "leisure": {
+      "kind": "遊技機入替",
+      "machines": 150,
+      "staff": "8名（自社2・外部6）",
+      "hours": 9,
+      "sourcing": "人材会社1社と、個人3名に依頼"
+    }
+  },
+  {
+    "id": "leisure-03",
+    "route": { "from": "本庄", "to": "本庄" },
+    "vehicleType": "大型ウィング",
+    "date": "2025/06/21",
+    "fare": null,
+    "surcharge": null,
+    "relatedOrderId": null,
+    "leisure": {
+      "kind": "遊技機入替",
+      "machines": 60,
+      "staff": "4名（自社2・外部2）",
+      "hours": 6,
+      "sourcing": "個人2名に依頼"
+    }
+  }
+]

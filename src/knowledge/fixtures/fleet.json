@@ -1,0 +1,13 @@
+{
+  "total": 100,
+  "filters": [
+    { "label": "保有している", "count": 100, "barWidth": 216 },
+    { "label": "大型ウィング", "count": 12, "barWidth": 26 },
+    { "label": "9/12 に空いている", "count": 4, "barWidth": 9 },
+    { "label": "乗れるドライバーがいる", "count": 2, "barWidth": 5 }
+  ],
+  "restWarning": {
+    "ruleId": "REST-MIN-09",
+    "text": "2台のうち1台は、前日の運行から翌朝の出庫まで、休息の時間が9時間を下回ります。"
+  }
+}

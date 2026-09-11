@@ -1,0 +1,116 @@
+{
+  "dateLabel": "9月12日(金)",
+  "hourStart": 6,
+  "hourEnd": 20,
+  "pxPerHour": 16,
+  "vehicles": [
+    {
+      "id": "wing-1",
+      "name": "ウィング①",
+      "lane": "信越",
+      "segments": [
+        {
+          "id": "seg-w1-run",
+          "kind": "run",
+          "label": "結城 → 岡谷",
+          "startHour": 6,
+          "endHour": 16
+        },
+        {
+          "id": "seg-w1-idle",
+          "kind": "idle",
+          "label": "空で戻る",
+          "startHour": 16,
+          "endHour": 21
+        }
+      ],
+      "restShortfall": true
+    },
+    {
+      "id": "flat-2",
+      "name": "平②",
+      "lane": "南関東",
+      "segments": [
+        {
+          "id": "seg-f2-run",
+          "kind": "run",
+          "label": "太田 → 川崎",
+          "startHour": 7,
+          "endHour": 13
+        },
+        {
+          "id": "seg-f2-idle",
+          "kind": "idle",
+          "label": "空で戻る",
+          "startHour": 13,
+          "endHour": 17
+        }
+      ],
+      "restShortfall": false
+    },
+    {
+      "id": "trailer-3",
+      "name": "トレーラー③",
+      "lane": "北関東",
+      "segments": [
+        {
+          "id": "seg-t3-run",
+          "kind": "run",
+          "label": "深谷 → 郡山",
+          "startHour": 6,
+          "endHour": 15
+        }
+      ],
+      "restShortfall": false,
+      "continuousDriveOver": true
+    },
+    {
+      "id": "wing-4",
+      "name": "ウィング④",
+      "lane": "東北",
+      "segments": [
+        {
+          "id": "seg-w4-run",
+          "kind": "run",
+          "label": "佐野→深谷",
+          "startHour": 9,
+          "endHour": 13,
+          "orderId": "ord-return-sano"
+        },
+        {
+          "id": "seg-w4-idle",
+          "kind": "idle",
+          "label": "",
+          "startHour": 13,
+          "endHour": 16
+        }
+      ],
+      "restShortfall": false
+    },
+    {
+      "id": "t4-5",
+      "name": "4t⑤",
+      "lane": "東海",
+      "segments": [
+        {
+          "id": "seg-t45-run",
+          "kind": "run",
+          "label": "前橋 → 静岡",
+          "startHour": 10,
+          "endHour": 18
+        }
+      ],
+      "restShortfall": false
+    }
+  ],
+  "suggestion": {
+    "id": "sug-return-1",
+    "targetVehicleId": "wing-1",
+    "idleSegmentId": "seg-w1-idle",
+    "orderId": "ord-return-sano",
+    "label": "帰り荷 佐野 → 深谷",
+    "startHour": 16,
+    "endHour": 21,
+    "ruleId": "RETURN-MATCH"
+  }
+}

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>運送 配車ナレッジ デモ</title>
+<style>
+:root{
+  color-scheme: light only;
+  --bg:#FAFAF8; --txt:#1F1F1D; --sub:#6B6B66;
+  --line:#DCDCD6; --lane:#EFEFEA; --ink:#1F1F1D;
+  --hot:#D9480F; --brand:#1F1F1D;
+}
+*{box-sizing:border-box;-webkit-text-size-adjust:100%;}
+html{background:#FAFAF8;}
+body{
+  margin:0; background:#FAFAF8; background:var(--bg);
+  color:#1F1F1D; color:var(--txt);
+  font-family:"Noto Sans CJK JP","Noto Sans JP","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;
+  word-break:auto-phrase; line-break:strict; text-wrap:pretty;
+  -webkit-font-smoothing:antialiased;
+}
+@media (prefers-color-scheme: dark){
+  html{background:#FAFAF8 !important;}
+  body{background:#FAFAF8 !important; color:#1F1F1D !important;}
+  .bar{background:#1F1F1D !important; color:#FAFAF8 !important;}
+  .bar b, .bar span{color:#FAFAF8 !important;}
+  .cap b{color:#1F1F1D !important;}
+  .cap p{color:#6B6B66 !important;}
+  .note{color:#6B6B66 !important; border-color:#DCDCD6 !important; background:#F4F4F0 !important;}
+  .btn{background:#1F1F1D !important; color:#FAFAF8 !important; border-color:#1F1F1D !important;}
+  .btn.ghost{background:transparent !important; color:#6B6B66 !important; border-color:#DCDCD6 !important;}
+  .btn[disabled]{background:#EFEFEA !important; color:#A9A9A2 !important; border-color:#DCDCD6 !important;}
+  .step{color:#6B6B66 !important;}
+  .stage{background:#FFFFFF !important; border-color:#DCDCD6 !important;}
+  .foot{color:#6B6B66 !important;}
+}
+.wrap{max-width:370px; margin:0 auto; padding:0 0 28px;}
+@media (min-width:760px){ .wrap{max-width:520px;} }
+
+.bar{ background:#1F1F1D; position:sticky; top:0; z-index:5; }
+.barin{ max-width:370px; margin:0 auto; padding:10px 14px; color:#FAFAF8;
+  display:flex; align-items:center; justify-content:space-between; }
+@media (min-width:760px){ .barin{ max-width:520px; } }
+.bar b{font-size:13px; letter-spacing:.08em; font-weight:700;}
+.bar span{font-size:11px; opacity:.85;}
+
+.step{font-size:11px; color:#6B6B66; padding:12px 16px 6px; letter-spacing:.04em;}
+
+.stage{
+  background:#FFFFFF; border:1px solid #DCDCD6; border-radius:10px;
+  margin:0 12px; padding:6px 4px 2px; overflow:hidden;
+}
+svg{display:block; width:100%; height:auto;}
+
+.cap{padding:16px 16px 4px; min-height:92px;}
+.cap b{display:block; font-size:15px; line-height:1.6; color:#1F1F1D; text-wrap:balance;}
+.cap p{margin:6px 0 0; font-size:12.5px; line-height:1.75; color:#6B6B66; text-wrap:balance;}
+
+.nav{display:flex; gap:10px; padding:8px 16px 0;}
+.btn{
+  flex:1; appearance:none; border:1px solid #1F1F1D; background:#1F1F1D; color:#FAFAF8;
+  border-radius:8px; padding:13px 10px; font-size:14px; font-weight:700;
+  font-family:inherit; cursor:pointer;
+}
+.btn.ghost{flex:0 0 88px; background:transparent; color:#6B6B66; border-color:#DCDCD6; font-weight:500;}
+.btn[disabled]{background:#EFEFEA; color:#A9A9A2; border-color:#DCDCD6; cursor:default;}
+
+.note{
+  margin:18px 12px 0; padding:12px 14px; border:1px solid #DCDCD6;
+  background:#F4F4F0; border-radius:8px;
+  font-size:11.5px; line-height:1.8; color:#6B6B66;
+}
+.note b{color:#1F1F1D; font-weight:700;}
+.foot{padding:14px 16px 0; font-size:11px; color:#6B6B66; line-height:1.7;}
+
+.mv{transition:transform 900ms cubic-bezier(.16,1,.3,1), opacity 500ms linear;}
+.fd{transition:opacity 600ms linear;}
+.dv{transition:stroke 500ms linear, stroke-width 500ms linear;}
+@media (prefers-reduced-motion: reduce){ .mv,.fd,.dv{transition:none !important;} }
+
+/* ===== 第2部 ===== */
+#part2,#part3,#part4{display:none;}
+.sec{padding:22px 12px 0;}
+.chip{display:inline-flex; align-items:center; gap:6px; font-size:10.5px; color:#6B6B66; margin-bottom:8px;}
+.chip i{width:10px; height:10px; border-radius:2px; background:#1F1F1D; display:block;}
+.chip.o i{background:#D9480F;}
+.chip.g i{background:#FFFFFF; border:1.6px solid #1F1F1D;}
+.scr{border:1px solid #DCDCD6; border-radius:10px; overflow:hidden; background:#FFFFFF;}
+.scr .top{background:#2B2B28; color:#FAFAF8; font-size:10.5px; padding:7px 10px; display:flex; justify-content:space-between;}
+.scr .tab{display:flex; gap:14px; border-bottom:1px solid #DCDCD6; padding:9px 10px 7px; font-size:11px; color:#6B6B66;}
+.scr .tab b{color:#1F1F1D; border-bottom:2px solid #1F1F1D; padding-bottom:6px; margin-bottom:-8px; font-weight:700;}
+.row{padding:9px 10px; border-bottom:1px solid #EFEFEA; font-size:11.5px; line-height:1.55;}
+.row:last-child{border-bottom:none;}
+.row .hd{display:flex; align-items:center; gap:6px; margin-bottom:3px;}
+.row .rt{font-weight:700; font-size:12px; color:#1F1F1D;}
+.row .sub{color:#6B6B66; font-size:10.5px;}
+.tg{font-size:9.5px; border:1px solid #DCDCD6; border-radius:3px; padding:1px 5px; color:#6B6B66; white-space:nowrap;}
+.tg.w{border-color:#D9480F; color:#D9480F;}
+.tg.k{background:#1F1F1D; color:#FAFAF8; border-color:#1F1F1D;}
+table.kv{width:100%; border-collapse:collapse; font-size:11.5px;}
+table.kv th{width:74px; text-align:left; font-weight:500; color:#6B6B66; padding:7px 10px; vertical-align:top; background:#F7F7F4; border-bottom:1px solid #EFEFEA; font-size:11px;}
+table.kv td{padding:7px 10px; border-bottom:1px solid #EFEFEA; line-height:1.6;}
+.hdr{font-size:10.5px; color:#6B6B66; padding:9px 10px 5px; background:#F7F7F4; border-bottom:1px solid #EFEFEA;}
+.warn{margin:10px; border:1px solid #D9480F; border-radius:6px; padding:10px 11px; font-size:11px; line-height:1.7; color:#1F1F1D;}
+.warn b{color:#D9480F; display:block; margin-bottom:3px; font-size:11.5px;}
+.exp{padding:11px 4px 0; font-size:12px; line-height:1.85; color:#4A4A45; text-wrap:balance;}
+.exp b{color:#1F1F1D;}
+.fn{display:flex; align-items:center; gap:8px; padding:5px 10px;}
+.fn .b{height:13px; background:#1F1F1D; border-radius:2px; flex:0 0 auto; min-width:5px;}
+.fn .t{font-size:10.5px; color:#6B6B66; white-space:nowrap;}
+.fn .t b{color:#1F1F1D; font-size:11.5px; margin-right:4px;}
+.board{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+.board .bd{min-width:330px; padding:0 8px 10px;}
+.tl{display:flex; font-size:9px; color:#6B6B66; padding:6px 0 3px; margin-left:62px;}
+.tl span{width:16px; flex:0 0 16px;}
+.br{display:flex; align-items:center; height:26px;}
+.br .nm{width:62px; flex:0 0 62px; font-size:10px; color:#1F1F1D; line-height:1.25;}
+.br .nm em{display:block; font-style:normal; color:#6B6B66; font-size:9px;}
+.bars{position:relative; height:15px; flex:1;}
+.gbar{position:absolute; height:15px; border-radius:2px; font-size:8.5px; color:#FAFAF8; line-height:15px; text-align:center; overflow:hidden; white-space:nowrap; padding:0 3px;}
+.gbar.run{background:#1F1F1D;}
+.gbar.idle{background:repeating-linear-gradient(45deg,#D8D8D2,#D8D8D2 4px,#F7F7F4 4px,#F7F7F4 9px); border:1px solid #DCDCD6; color:#6B6B66; box-sizing:border-box;}
+.gbar.sug{background:#D9480F;}
+.lg{display:flex; gap:12px; font-size:9.5px; color:#6B6B66; padding:4px 0 0 62px;}
+.lg i{display:inline-block; width:12px; height:8px; border-radius:2px; margin-right:4px; vertical-align:0;}
+.pt{font-size:11px; color:#6B6B66; padding:20px 16px 0; letter-spacing:.04em;}
+.bk{padding:22px 12px 0;}
+.bk button{width:100%; appearance:none; border:1px solid #DCDCD6; background:transparent; color:#6B6B66; border-radius:8px; padding:12px; font-size:13px; font-family:inherit; cursor:pointer;}
+@media (prefers-color-scheme: dark){
+  .scr{background:#FFFFFF !important; border-color:#DCDCD6 !important;}
+  .scr .top{background:#2B2B28 !important; color:#FAFAF8 !important;}
+  .scr .tab{color:#6B6B66 !important;} .scr .tab b{color:#1F1F1D !important;}
+  .row{color:#1F1F1D !important;} .row .rt{color:#1F1F1D !important;} .row .sub{color:#6B6B66 !important;}
+  table.kv th{background:#F7F7F4 !important; color:#6B6B66 !important;}
+  table.kv td{color:#1F1F1D !important;}
+  .hdr{background:#F7F7F4 !important; color:#6B6B66 !important;}
+  .warn{color:#1F1F1D !important;} .exp{color:#4A4A45 !important;}
+  .tg{color:#6B6B66 !important;} .tg.k{background:#1F1F1D !important; color:#FAFAF8 !important;}
+  .br .nm{color:#1F1F1D !important;}
+}
+</style>
+</head>
+<body>
+<div class="bar"><div class="barin"><b>ideal</b><span>運送　配車ナレッジ デモ</span></div></div>
+<div class="wrap">
+
+  <div id="part1">
+  <div class="step" id="stepLabel">1 / 8</div>
+
+  <div class="stage">
+    <svg id="fig" viewBox="0 0 370 408" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="配車の流れを示す図"></svg>
+  </div>
+
+  <div class="cap">
+    <b id="capT"></b>
+    <p id="capS"></p>
+  </div>
+
+  <div class="nav">
+    <button class="btn ghost" id="prev">戻る</button>
+    <button class="btn" id="next">次へ</button>
+  </div>
+
+  <div class="note">
+    <b>この図の数字は仮です。</b>
+    担当者5名（地域ごと）と1日20件は、お聞きした内容をそのまま置いています。
+    自社の車で運ぶ割合は80%として描いています。
+    実際の内訳をお聞きして、この図の本数と件数を直します。
+  </div>
+
+  <div class="foot">
+    これは第1部（今起きていること）です。この先に実際の画面と、そのあとの状態が入ります。
+  </div>
+  </div><!-- /part1 -->
+
+  <div id="part2">
+
+    <div class="pt">実際の画面　1 / 4</div>
+    <div class="sec">
+      <div class="chip"><i></i>第1部の「3つの入口」にあたります</div>
+      <div class="scr">
+        <div class="top"><span>受注一覧</span><span>9月12日(金)</span></div>
+        <div class="tab"><b>未処理 5</b><span>処理済 15</span><span>すべて</span></div>
+        <div class="row">
+          <div class="hd"><span class="tg k">ネット</span><span class="sub">09:12 受付</span></div>
+          <div class="rt">結城（茨城） → 岡谷（長野）</div>
+          <div class="sub">9/12 午前 積 ／ 10t ウィング ／ 3,000kg・パレット10枚</div>
+        </div>
+        <div class="row">
+          <div class="hd"><span class="tg">ファックス</span><span class="sub">09:26 受付</span><span class="tg w">要確認</span></div>
+          <div class="rt">太田（群馬） → 川崎（神奈川）</div>
+          <div class="sub">9/12 午後 積 ／ 4t 平 ／ 総重量の数字が読み取れません</div>
+        </div>
+        <div class="row">
+          <div class="hd"><span class="tg">電話</span><span class="sub">09:40 受付</span><span class="tg w">要確認</span></div>
+          <div class="rt">深谷（埼玉） → 郡山（福島）</div>
+          <div class="sub">9/13 午前 積 ／ 大型ウィング ／ 卸し先の連絡先を聞けていません</div>
+        </div>
+        <div class="row">
+          <div class="hd"><span class="tg k">ネット</span><span class="sub">10:05 受付</span></div>
+          <div class="rt">熊谷（埼玉） → 柏（千葉）</div>
+          <div class="sub">9/12 午後 積 ／ 4t ウィング ／ 1,200kg</div>
+        </div>
+        <div class="row">
+          <div class="hd"><span class="tg">ファックス</span><span class="sub">10:18 受付</span><span class="tg w">要確認</span></div>
+          <div class="rt">前橋（群馬） → 静岡</div>
+          <div class="sub">9/13 午前 積 ／ トレーラー 低床 ／ 荷物の高さが読み取れません</div>
+        </div>
+      </div>
+      <div class="exp">
+        ネット、ファックス、電話で来た依頼が、<b>同じ形で一覧に並びます</b>。
+        ファックスと電話は、読み取れなかったところに要確認が付きます。
+        読めないものをシステムが埋めることはしません。中身を確定するのは担当者です。
+      </div>
+    </div>
+
+    <div class="pt">実際の画面　2 / 4</div>
+    <div class="sec">
+      <div class="scr">
+        <div class="top"><span>依頼の内容</span><span>受付番号 1058695</span></div>
+        <table class="kv">
+          <tr><th>積み</th><td>9/12（金）午前<br>茨城県結城市　9:00から積み込み可<br>ドライバー作業：フォーク</td></tr>
+          <tr><th>卸し</th><td>9/13（土）午後<br>長野県岡谷市　20:00まで荷卸し可<br>ドライバー作業：フォーク</td></tr>
+          <tr><th>荷物</th><td>パレット10枚／縦110cm・横110cm／総重量 3,000kg</td></tr>
+          <tr><th>車両</th><td>10t ウィング　緩衝材が必要</td></tr>
+        </table>
+        <div class="hdr">条件の近い過去の案件</div>
+        <div class="row">
+          <div class="rt">結城 → 諏訪　10t ウィング</div>
+          <div class="sub">2026/06/18 ／ 運賃 88,000円 ／ 付帯作業料 6,000円</div>
+        </div>
+        <div class="row">
+          <div class="rt">筑西 → 岡谷　10t ウィング</div>
+          <div class="sub">2026/04/09 ／ 運賃 92,000円 ／ 付帯作業料 5,000円</div>
+        </div>
+        <div class="row">
+          <div class="rt">結城 → 松本　10t ウィング</div>
+          <div class="sub">2025/12/22 ／ 運賃 86,000円 ／ 付帯作業料 なし</div>
+        </div>
+        <div class="warn">
+          <b>付帯作業料の記載がありません</b>
+          積み地と卸し地の両方に、ドライバーのフォーク作業が入っています。
+          条件の近い3件のうち2件では、付帯作業料が5,000円から6,000円ついていました。
+        </div>
+        <div class="hdr">この依頼に出せる車</div>
+        <div class="fn"><span class="b" style="width:216px"></span><span class="t"><b>100台</b>保有している</span></div>
+        <div class="fn"><span class="b" style="width:26px"></span><span class="t"><b>12台</b>大型ウィング</span></div>
+        <div class="fn"><span class="b" style="width:9px"></span><span class="t"><b>4台</b>9/12 に空いている</span></div>
+        <div class="fn"><span class="b" style="width:5px"></span><span class="t"><b>2台</b>乗れるドライバーがいる</span></div>
+        <div class="warn">
+          <b>残り1台になります</b>
+          2台のうち1台は、前日の運行から翌朝の出庫まで、休息の時間が8時間を下回ります。
+        </div>
+      </div>
+      <div class="exp">
+        <b>金額を決めるのはシステムではありません。</b>
+        過去にいくらで受けたかを並べて、記載の抜けているところだけを指摘します。
+        3件のうち2件、という出し方をしているのは、いつも付くとは限らないためです。
+        出すかどうかは担当者が荷主と決めます。<br><br>
+        下は、この依頼に出せる車です。<b>車種で絞り、その日の空きで絞り、乗れるドライバーがいるかで絞ります。</b>
+        100台あっても、1件ごとに出せる車はこれだけになります。
+        残った1台で受けるか、協力会社に出すか、断るかを担当者が決めます。
+      </div>
+    </div>
+
+    <div class="pt">実際の画面　3 / 4</div>
+    <div class="sec">
+      <div class="chip g"><i></i>第1部の「空で戻る車」にあたります</div>
+      <div class="chip o" style="margin-left:14px"><i></i>「渡らなかった荷物」にあたります</div>
+      <div class="scr">
+        <div class="top"><span>配車盤　担当5名ぶん</span><span>9月12日(金)</span></div>
+        <div class="board"><div class="bd">
+          <div class="tl"><span>6</span><span></span><span>8</span><span></span><span>10</span><span></span><span>12</span><span></span><span>14</span><span></span><span>16</span><span></span><span>18</span><span></span><span>20</span><span></span></div>
+
+          <div class="br"><div class="nm">ウィング①<em>信越</em></div><div class="bars">
+            <div class="gbar run" style="left:0px;width:160px">結城 → 岡谷</div>
+            <div class="gbar idle" style="left:160px;width:80px">空で戻る</div>
+          </div></div>
+          <div class="br"><div class="nm" style="font-size:9px;color:#D9480F">候補</div><div class="bars">
+            <div class="gbar sug" style="left:160px;width:80px">帰り荷 佐野 → 深谷</div>
+          </div></div>
+
+          <div class="br"><div class="nm">平②<em>南関東</em></div><div class="bars">
+            <div class="gbar run" style="left:16px;width:96px">太田 → 川崎</div>
+            <div class="gbar idle" style="left:112px;width:64px">空で戻る</div>
+          </div></div>
+
+          <div class="br"><div class="nm">トレーラー③<em>北関東</em></div><div class="bars">
+            <div class="gbar run" style="left:0px;width:144px">深谷 → 郡山</div>
+          </div></div>
+
+          <div class="br"><div class="nm">ウィング④<em>東北</em></div><div class="bars">
+            <div class="gbar run" style="left:48px;width:64px">佐野→深谷</div>
+            <div class="gbar idle" style="left:112px;width:48px"></div>
+          </div></div>
+
+          <div class="br"><div class="nm">4t⑤<em>東海</em></div><div class="bars">
+            <div class="gbar run" style="left:64px;width:128px">前橋 → 静岡</div>
+          </div></div>
+
+          <div class="lg">
+            <span><i style="background:#1F1F1D"></i>荷物を積んでいる</span>
+            <span><i style="background:#E4E4DE;border:1px solid #DCDCD6"></i>空</span>
+            <span><i style="background:#D9480F"></i>候補</span>
+          </div>
+        </div></div>
+        <div class="warn">
+          <b>2件、確認してください</b>
+          ウィング①　翌朝の出庫まで、休息の時間が8時間を下回ります。<br>
+          トレーラー③　連続して運転する時間が4時間を超える区間があります。
+        </div>
+      </div>
+      <div class="exp">
+        5人の担当が別々に持っていた予定を、1枚に並べています。斜線の区間は荷物を積んでいない時間です。
+        <b>ウィング①が空で戻る時間に、東北担当が持っていた荷物が候補として出ています。</b>
+        システムがするのはここまでです。組み替えるかどうかは担当者が決めます。
+        休息や連続運転の警告も、止めるのではなく、確認してくださいと出すところまでです。
+      </div>
+    </div>
+
+    <div class="pt">実際の画面　4 / 4</div>
+    <div class="sec">
+      <div class="scr">
+        <div class="top"><span>遊技機 入替</span><span>9月12日(金) 22:00 → 翌 6:00</span></div>
+        <table class="kv">
+          <tr><th>現場</th><td>深谷市内　ホール　／　120台</td></tr>
+          <tr><th>車両</th><td>大型ウィング 2台　<span class="tg">候補 2件</span><br>ウィング①／ウィング④　どちらも当日は空いています</td></tr>
+          <tr><th>人員</th><td>6名（自社ドライバー2名・外部4名）　<span class="tg w">候補なし</span></td></tr>
+        </table>
+        <div class="warn">
+          <b>人員の候補を出せません</b>
+          この種類の案件は、記録が3件しかありません。候補を出せる件数に達していません。
+        </div>
+        <div class="hdr">過去にこの種類でやったこと</div>
+        <div class="row">
+          <div class="rt">2026/03/14　熊谷　80台</div>
+          <div class="sub">5名（自社2・外部3）／ 7時間 ／ 人材会社1社に依頼</div>
+        </div>
+        <div class="row">
+          <div class="rt">2025/11/08　太田　150台</div>
+          <div class="sub">8名（自社2・外部6）／ 9時間 ／ 人材会社1社と、個人3名に依頼</div>
+        </div>
+        <div class="row">
+          <div class="rt">2025/06/21　本庄　60台</div>
+          <div class="sub">4名（自社2・外部2）／ 6時間 ／ 個人2名に依頼</div>
+        </div>
+      </div>
+      <div class="exp">
+        車両は候補を出せますが、人員は出せません。記録が3件しかないためです。
+        <b>できないことは、できないと画面に出します。</b>
+        今回は担当者が電話で手配して、その結果をここに記録します。
+        件数がたまると、人員にも候補が出るようになります。特殊な案件ほど、この積み重ねに時間がかかります。
+      </div>
+    </div>
+
+    <div class="nav" style="padding:24px 12px 0">
+      <button class="btn ghost" id="back1">戻る</button>
+      <button class="btn" id="to3">このあとどうなるか</button>
+    </div>
+  </div><!-- /part2 -->
+
+  <div id="part3">
+    <div class="pt">仕組みを入れたあと</div>
+    <div class="step" id="stepLabel3">1 / 3</div>
+    <div id="stage3"></div>
+    <div class="cap"><b id="capT3"></b><p id="capS3"></p></div>
+    <div class="nav">
+      <button class="btn ghost" id="prev3">戻る</button>
+      <button class="btn" id="next3">次へ</button>
+    </div>
+    <div class="note">
+      第1部と同じ図です。担当の分け方も、依頼の数も変えていません。
+      変えたのは、<b>全員が同じ一覧を見ている</b>という条件だけです。
+    </div>
+  </div>
+
+  <div id="part4">
+    <div class="pt">扱う量が10倍になったら</div>
+    <div class="step" id="stepLabel4">1 / 3</div>
+    <div class="stage"><svg id="fig4" viewBox="0 0 370 392" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="担当者の間の確認の数を示す図"></svg></div>
+    <div class="cap"><b id="capT4"></b><p id="capS4"></p></div>
+    <div class="nav">
+      <button class="btn ghost" id="prev4">戻る</button>
+      <button class="btn" id="next4">次へ</button>
+    </div>
+    <div class="note">
+      <b>増えるもの</b>：判断する担当者、例外の件数、協力会社とのやり取り。<br>
+      <b>増え方が変わるもの</b>：依頼を集める手間、予定を見る手間、記録の置き場。<br>
+      10倍は仮の数字です。車を10倍にするより、<b>扱う依頼と協力会社の数が増える</b>形になると見ています。
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var SVGNS="http://www.w3.org/2000/svg";
+  var fig=document.getElementById("fig");
+
+  // ---- 座標 ----
+  var LT=98, LH=50, LP=58;                 // レーン上端 / 高さ / 間隔
+  var TX0=64, TX1=358;                     // 走行路
+  var QX=68, QG=13;                        // 待機荷物の並び
+  var TRUCK_HOME=142, TRUCK_FAR=296;       // 車の位置
+  var ARRIVE=332;                          // 荷物を降ろす位置
+  var LANES=["北関東","信越","東北","南関東","東海"];
+  var QUEUE=[4,4,4,5,3];                   // 合計20件
+  function cy(i){ return LT + i*LP + LH/2; }
+  function el(n,a){ var e=document.createElementNS(SVGNS,n); for(var k in a) e.setAttribute(k,a[k]); return e; }
+  function add(e){ fig.appendChild(e); return e; }
+
+  // ---- 背景：レーン ----
+  for(var i=0;i<5;i++){
+    add(el("rect",{x:TX0,y:LT+i*LP,width:TX1-TX0,height:LH,rx:3,fill:"#EFEFEA"}));
+    var t=add(el("text",{x:58,y:cy(i)+4,"text-anchor":"end","font-size":"10.5",fill:"#6B6B66"}));
+    t.textContent=LANES[i]; t.setAttribute("class","fd"); t.style.opacity=0; t.dataset.from=2;
+  }
+
+  // ---- 仕切り線 ----
+  var divs=[];
+  for(var i=0;i<4;i++){
+    var d=add(el("line",{x1:44,y1:LT+(i+1)*LP-4,x2:TX1,y2:LT+(i+1)*LP-4,stroke:"#DCDCD6","stroke-width":1}));
+    d.setAttribute("class","dv fd"); d.style.opacity=0; d.dataset.from=2; divs.push(d);
+  }
+
+  // ---- 入口 ----
+  var ENT=[{x:100,l:"ネット"},{x:185,l:"ファックス"},{x:272,l:"電話"}];
+  var ents=[];
+  for(var i=0;i<3;i++){
+    var g=add(el("g",{})); g.setAttribute("class","fd"); g.style.opacity=0; g.dataset.from=1;
+    var x=ENT[i].x;
+    if(i===0){ g.appendChild(el("rect",{x:x-13,y:24,width:26,height:24,rx:3,fill:"none",stroke:"#1F1F1D","stroke-width":1.4}));
+               g.appendChild(el("line",{x1:x-13,y1:31,x2:x+13,y2:31,stroke:"#1F1F1D","stroke-width":1.4}));
+               g.appendChild(el("line",{x1:x-8,y1:38,x2:x+6,y2:38,stroke:"#1F1F1D","stroke-width":1.2}));
+               g.appendChild(el("line",{x1:x-8,y1:43,x2:x+2,y2:43,stroke:"#1F1F1D","stroke-width":1.2})); }
+    if(i===1){ g.appendChild(el("rect",{x:x-13,y:31,width:26,height:16,rx:2,fill:"none",stroke:"#1F1F1D","stroke-width":1.4}));
+               g.appendChild(el("rect",{x:x-8,y:22,width:16,height:11,fill:"#FFFFFF",stroke:"#1F1F1D","stroke-width":1.4})); }
+    if(i===2){ g.appendChild(el("rect",{x:x-9,y:24,width:18,height:24,rx:5,fill:"none",stroke:"#1F1F1D","stroke-width":1.4}));
+               g.appendChild(el("line",{x1:x-4,y1:43,x2:x+4,y2:43,stroke:"#1F1F1D","stroke-width":1.4})); }
+    var lb=el("text",{x:x,y:66,"text-anchor":"middle","font-size":"9.5",fill:"#6B6B66"});
+    lb.textContent=ENT[i].l; g.appendChild(lb);
+    ents.push(g);
+  }
+
+  // ---- 待機している荷物 ----
+  var cargo=[];   // cargo[lane] = [rect,...]
+  for(var i=0;i<5;i++){
+    cargo[i]=[];
+    for(var k=0;k<QUEUE[i];k++){
+      var r=add(el("rect",{x:QX+k*QG,y:cy(i)-5,width:10,height:10,rx:1.5,fill:"#1F1F1D"}));
+      r.setAttribute("class","mv"); r.style.opacity=0;
+      cargo[i].push(r);
+    }
+  }
+
+  // ---- 車（枠だけ。中に荷物が入れば積んでいる） ----
+  var trucks=[];
+  for(var i=0;i<5;i++){
+    var g=add(el("g",{})); g.setAttribute("class","mv fd"); g.style.opacity=0; g.dataset.from=2;
+    g.appendChild(el("rect",{x:TRUCK_HOME,y:cy(i)-11,width:30,height:22,rx:2,fill:"none",stroke:"#1F1F1D","stroke-width":1.6}));
+    g.appendChild(el("circle",{cx:TRUCK_HOME+8,cy:cy(i)+13,r:3,fill:"#1F1F1D"}));
+    g.appendChild(el("circle",{cx:TRUCK_HOME+23,cy:cy(i)+13,r:3,fill:"#1F1F1D"}));
+    trucks.push(g);
+  }
+
+  // ---- 戻る向きの荷物（渡れないもの） ----
+  var back=[];
+  [2,4].forEach(function(i){
+    var r=add(el("rect",{x:TRUCK_FAR+10,y:cy(i)-5,width:10,height:10,rx:1.5,fill:"#D9480F"}));
+    r.setAttribute("class","mv"); r.style.opacity=0; back.push(r);
+  });
+
+  function mv(e,dx,dy){ e.style.transform="translate("+dx+"px,"+dy+"px)"; }
+  function show(e,v){ e.style.opacity=v?1:0; }
+
+  // ---- 各段の状態（絶対値で定義する） ----
+  // lane1 が運ぶ荷物 = cargo[1] の末尾、lane0 が運ぶ荷物 = cargo[0] の末尾
+  var C1=null, C0=null;
+  C1=function(){ return cargo[1][QUEUE[1]-1]; };
+  C0=function(){ return cargo[0][QUEUE[0]-1]; };
+  function inTruck(lane){ return TRUCK_HOME+10 - (QX+(QUEUE[lane]-1)*QG); }  // 車内までの移動量
+
+  var CAP=[
+   ["依頼は、3つの別々の入口から入ってきます","ネット、ファックス、電話。受けた人も、控えの残り方も、それぞれ違います。"],
+   ["依頼は、地域ごとの担当5名に分かれます","どの依頼を誰が持っているかは、その担当者の手元にしかありません。"],
+   ["担当は、自分の受け持ちの中から車を出します","荷物を積んで、目的地まで運びます。"],
+   ["荷物を降ろすと、その車は現地で空になります","担当は、帰りに積む荷物を探します。"],
+   ["同じころ、すぐ下の担当に戻る向きの荷物が入ります","いま空になった車と、進む向きが同じ荷物です。"],
+   ["この荷物は、隣の担当の車には渡りません","担当ごとに依頼を持っているので、互いの空きが見えません。"],
+   ["車は、何も積まずに戻ります","荷物のほうは運ばれず、担当の手元に残ります。"],
+   ["同じことが、ほかの担当でも起きています","空で走った距離も、運べなかった荷物も、誰も数えていません。"]
+  ];
+
+  var MAX=8, cur=0, timers=[];
+  function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
+
+  function apply(s, animate){
+    clearTimers();
+    // 表示・非表示
+    [].forEach.call(fig.querySelectorAll("[data-from]"),function(e){ show(e, s>=+e.dataset.from); });
+
+    // 荷物の表示
+    for(var i=0;i<5;i++) for(var k=0;k<QUEUE[i];k++){
+      var isDrop = (k===0) && (i===0||i===2||i===3);
+      show(cargo[i][k], s>=2 || (s>=1 && isDrop));
+    }
+    // 落下：段1は入口の高さから、段2以降は所定位置
+    [[0,0],[2,1],[3,2]].forEach(function(p,n){
+      var r=cargo[p[0]][0];
+      if(s===1 && animate){
+        r.style.transition="none";
+        mv(r, ENT[p[1]].x-QX-5, -(cy(p[0])-52));
+        r.getBoundingClientRect();
+        r.style.transition="";
+        timers.push(setTimeout(function(){ mv(r,0,0); }, 80+n*420));
+      } else { mv(r,0,0); }
+    });
+
+    // 車と積み荷（出る前の車は荷物を積んでいる。空なのは戻ってきた車だけ）
+    for(var i=0;i<5;i++) mv(trucks[i],0,0);
+    [0,2,3,4].forEach(function(i){ mv(cargo[i][QUEUE[i]-1], inTruck(i), 0); });
+    mv(C1(),0,0);
+
+    if(s>=3 && s<=6){ mv(trucks[1],TRUCK_FAR-TRUCK_HOME,0); }
+    if(s===3){ mv(C1(),inTruck(1)+(TRUCK_FAR-TRUCK_HOME),0); }
+    if(s>=4){ mv(C1(),ARRIVE-(QX+(QUEUE[1]-1)*QG),0); }
+
+    // 戻る向きの荷物
+    show(back[0], s>=5); show(back[1], s>=8);
+    mv(back[0], 0, (s>=6)? -20 : 0);
+    mv(back[1], 0, (s>=8)? -20 : 0);
+    if(s===8 && animate){
+      show(back[1],false); mv(back[1],0,0);
+      timers.push(setTimeout(function(){ show(back[1],true); },900));
+      timers.push(setTimeout(function(){ mv(back[1],0,-20); },1600));
+    }
+
+    // 仕切り線
+    divs.forEach(function(d,i){
+      var strong = (s>=6 && i===1) || (s>=8 && i===3);
+      d.setAttribute("stroke", strong?"#1F1F1D":"#DCDCD6");
+      d.setAttribute("stroke-width", strong?2.4:1);
+    });
+
+    document.getElementById("capT").textContent=CAP[s-1][0];
+    document.getElementById("capS").textContent=CAP[s-1][1];
+    document.getElementById("stepLabel").textContent=s+" / "+MAX;
+    document.getElementById("prev").disabled=(s<=1);
+    var nx=document.getElementById("next");
+    nx.disabled=false;
+    nx.textContent=(s>=MAX)?"実際の画面を見る":"次へ";
+  }
+
+  document.getElementById("next").onclick=function(){
+    if(cur<MAX){ cur++; apply(cur,true); return; }
+    document.getElementById("part1").style.display="none";
+    document.getElementById("part2").style.display="block";
+    window.scrollTo(0,0);
+  };
+  document.getElementById("prev").onclick=function(){ if(cur>1){ cur--; apply(cur,false); } };
+
+  // ===== 部の切り替え =====
+  var stageEl=document.querySelector(".stage");
+  var stageHome=stageEl.parentNode, stageNext=stageEl.nextSibling;
+  function go(id){
+    ["part1","part2","part3","part4"].forEach(function(p){
+      document.getElementById(p).style.display=(p===id)?"block":"none";
+    });
+    if(id==="part3"){ document.getElementById("stage3").appendChild(stageEl); }
+    else if(id==="part1"){ stageHome.insertBefore(stageEl,stageNext); }
+    window.scrollTo(0,0);
+  }
+
+  // ===== 第3部：同じ図、条件だけ変えて再演する =====
+  var CAP3=[
+   ["依頼は、入った時点で1つの一覧に入ります","担当は分かれたままです。見ているものが同じになっただけです。"],
+   ["荷物を降ろすと、その車は現地で空になります","ここまでは前と同じです。"],
+   ["すぐ下の担当の荷物が、その車に載ります","空で戻る車が1台減ります。なくなるわけではありません。"]
+  ];
+  var c3=1;
+  function apply3(s,animate){
+    clearTimers();
+    [].forEach.call(fig.querySelectorAll("[data-from]"),function(e){ show(e,true); });
+    for(var i=0;i<5;i++) for(var k=0;k<QUEUE[i];k++) show(cargo[i][k],true);
+    for(var i=0;i<5;i++){ mv(trucks[i],0,0); mv(cargo[i][QUEUE[i]-1], inTruck(i), 0); }
+    for(var i=0;i<5;i++) for(var k=0;k<QUEUE[i]-1;k++) mv(cargo[i][k],0,0);
+    divs.forEach(function(d){ d.setAttribute("stroke","#DCDCD6"); d.setAttribute("stroke-width",1); });
+    show(back[1],false);
+    show(back[0], s>=1);
+    mv(back[0],0,0);
+
+    if(s===1){ mv(C1(),0,0); }
+    if(s>=2){
+      mv(trucks[1],TRUCK_FAR-TRUCK_HOME,0);
+      mv(C1(),ARRIVE-(QX+(QUEUE[1]-1)*QG),0);
+      if(s===2 && animate){
+        mv(C1(),inTruck(1)+(TRUCK_FAR-TRUCK_HOME),0);
+        timers.push(setTimeout(function(){ mv(C1(),ARRIVE-(QX+(QUEUE[1]-1)*QG),0); },950));
+      }
+    }
+    if(s>=3){
+      mv(back[0], 0, cy(1)-cy(2));                      // 仕切りを越えて上の車に載る
+      if(animate){
+        timers.push(setTimeout(function(){
+          mv(trucks[1],0,0); mv(back[0], TRUCK_HOME-TRUCK_FAR, cy(1)-cy(2));
+        },1100));
+      } else { mv(trucks[1],0,0); mv(back[0], TRUCK_HOME-TRUCK_FAR, cy(1)-cy(2)); }
+    }
+
+    document.getElementById("capT3").textContent=CAP3[s-1][0];
+    document.getElementById("capS3").textContent=CAP3[s-1][1];
+    document.getElementById("stepLabel3").textContent=s+" / 3";
+    document.getElementById("prev3").disabled=(s<=1);
+    document.getElementById("next3").textContent=(s>=3)?"扱う量が10倍になったら":"次へ";
+  }
+
+  document.getElementById("to3").onclick=function(){ go("part3"); c3=1; apply3(1,false); };
+  document.getElementById("back1").onclick=function(){ go("part1"); apply(cur,false); };
+  document.getElementById("next3").onclick=function(){
+    if(c3<3){ c3++; apply3(c3,true); } else { go("part4"); c4=1; apply4(1,false); }
+  };
+  document.getElementById("prev3").onclick=function(){ if(c3>1){ c3--; apply3(c3,false); } };
+
+  // ===== 第4部：確認する組み合わせ =====
+  var f4=document.getElementById("fig4");
+  var CX=185, CY=188, R=134, N=20;
+  function pt(i){ var a=(-90+i*(360/N))*Math.PI/180; return [CX+R*Math.cos(a), CY+R*Math.sin(a)]; }
+  var FIVE=[0,4,8,12,16];
+  function e4(n,a){ var e=document.createElementNS(SVGNS,n); for(var k in a) e.setAttribute(k,a[k]); f4.appendChild(e); return e; }
+
+  var linesAll=[], lines5=[], hub=[], dots=[];
+  for(var i=0;i<N;i++) for(var j=i+1;j<N;j++){
+    var p=pt(i), q=pt(j);
+    var isFive = FIVE.indexOf(i)>=0 && FIVE.indexOf(j)>=0;
+    var L=e4("line",{x1:p[0],y1:p[1],x2:q[0],y2:q[1],stroke:"#1F1F1D","stroke-width":isFive?1:0.6,opacity:0});
+    L.setAttribute("class","fd");
+    if(isFive) lines5.push(L); else linesAll.push(L);
+  }
+  var board=e4("g",{});
+  board.setAttribute("class","fd"); board.style.opacity=0;
+  board.appendChild(el("rect",{x:CX-42,y:CY-28,width:84,height:56,rx:4,fill:"#FAFAF8",stroke:"#1F1F1D","stroke-width":2}));
+  for(var r=0;r<4;r++) board.appendChild(el("line",{x1:CX-32,y1:CY-14+r*10,x2:CX+32,y2:CY-14+r*10,stroke:"#1F1F1D","stroke-width":1.4}));
+  for(var i=0;i<N;i++){
+    var p=pt(i);
+    var L=e4("line",{x1:p[0],y1:p[1],x2:CX,y2:CY,stroke:"#1F1F1D","stroke-width":1,opacity:0});
+    L.setAttribute("class","fd"); hub.push(L);
+  }
+  f4.appendChild(board);
+  for(var i=0;i<N;i++){
+    var p=pt(i), five=FIVE.indexOf(i)>=0;
+    var c=e4("circle",{cx:p[0],cy:p[1],r:five?7:6,fill:"#1F1F1D",opacity:0});
+    c.setAttribute("class","fd"); dots.push({el:c,five:five});
+  }
+
+  var CAP4=[
+   ["いまは、5人がお互いに確認しています","隣の担当が何を持っているかは、聞かないと分かりません。"],
+   ["扱う量が増えると、人を増やして捌くことになります","人が4倍になると、確認する組み合わせは19倍になります。"],
+   ["全員が同じ一覧を見ると、確認する先はそこだけになります","担当は増えます。増え方が変わるのは、確認の手間のほうです。"]
+  ];
+  var c4=1;
+  function apply4(s){
+    dots.forEach(function(d){ d.el.style.opacity=(s>=2 || d.five)?1:0; });
+    lines5.forEach(function(l){ l.style.opacity=(s<=2)?1:0; });
+    linesAll.forEach(function(l){ l.style.opacity=(s===2)?0.85:0; });
+    hub.forEach(function(l){ l.style.opacity=(s>=3)?1:0; });
+    board.style.opacity=(s>=3)?1:0;
+    document.getElementById("capT4").textContent=CAP4[s-1][0];
+    document.getElementById("capS4").textContent=CAP4[s-1][1];
+    document.getElementById("stepLabel4").textContent=s+" / 3";
+    document.getElementById("prev4").disabled=(s<=1);
+    document.getElementById("next4").textContent=(s>=3)?"最初に戻る":"次へ";
+  }
+  document.getElementById("next4").onclick=function(){
+    if(c4<3){ c4++; apply4(c4); } else { go("part1"); cur=1; apply(1,false); }
+  };
+  document.getElementById("prev4").onclick=function(){ if(c4>1){ c4--; apply4(c4); } };
+
+  document.getElementById("capT").textContent=CAP[0][0];
+  document.getElementById("capS").textContent=CAP[0][1];
+  document.getElementById("prev").disabled=true;
+  setTimeout(function(){ cur=1; apply(1,true); },350);
+})();
+</script>
+</body>
+</html>

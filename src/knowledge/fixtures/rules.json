@@ -1,0 +1,37 @@
+{
+  "restMinHours": 9,
+  "restPreferredHours": 11,
+  "continuousDriveMaxHours": 4,
+  "staffCandidateMinCases": 3,
+  "rules": [
+    {
+      "id": "REST-MIN-09",
+      "summary": "出庫まで休息が9時間を下回る → 確認（止めない）"
+    },
+    {
+      "id": "DRIVE-CONT-04",
+      "summary": "連続運転が4時間を超える → 確認（止めない）"
+    },
+    {
+      "id": "SURCHARGE-FORK",
+      "summary": "積卸ともフォークなのに付帯記載なし、類似の過半で付いていた → 指摘"
+    },
+    {
+      "id": "RETURN-MATCH",
+      "summary": "空区間と向きが同じ未割当荷物 → 候補"
+    },
+    {
+      "id": "STAFF-MIN-3",
+      "summary": "当該種別の記録が3件未満 → 人員候補なし"
+    }
+  ],
+  "leisureJob": {
+    "title": "遊技機 入替",
+    "window": "9月12日(金) 22:00 → 翌 6:00",
+    "site": "深谷市内　ホール　／　120台",
+    "vehiclesNeeded": 2,
+    "vehicleCandidates": ["ウィング①", "ウィング④"],
+    "staffNeeded": "6名（自社ドライバー2名・外部4名）",
+    "staffRecordCount": 3
+  }
+}
