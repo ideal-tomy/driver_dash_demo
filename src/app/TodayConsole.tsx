@@ -13,11 +13,15 @@ const TABS: { id: ConsoleTab; label: string }[] = [
 ];
 
 type Props = {
-  /** 商談フロー内（主CTAあり）か、単独閲覧か */
-  inFlow?: boolean;
+  /** pitch=商談フロー / delivery=厳選版・/board 納品入口 */
+  variant?: "pitch" | "delivery";
+  returnUrl?: string | null;
 };
 
-export function TodayConsole({ inFlow = true }: Props) {
+export function TodayConsole({
+  variant = "pitch",
+  returnUrl = null,
+}: Props) {
   const {
     board,
     consoleTab,
@@ -34,6 +38,7 @@ export function TodayConsole({ inFlow = true }: Props) {
 
   const decided = returnDecision !== "pending";
   const faxAlerts = orders.filter((o) => o.needsConfirm);
+  const showCta = variant === "pitch" || variant === "delivery";
 
   return (
     <div className="console">
@@ -42,6 +47,11 @@ export function TodayConsole({ inFlow = true }: Props) {
           <h1>配車</h1>
           <p>{board.dateLabel}</p>
         </div>
+        {returnUrl ? (
+          <a className="console-back" href={returnUrl}>
+            ← 紹介へ
+          </a>
+        ) : null}
       </header>
 
       <nav className="console-tabs" aria-label="画面">
@@ -104,13 +114,15 @@ export function TodayConsole({ inFlow = true }: Props) {
             </div>
           ) : null}
 
-          {inFlow ? (
+          {showCta ? (
             <div className="console-cta">
               {!decided ? (
                 <button
                   type="button"
                   className="btn"
-                  onClick={() => setStep("part1")}
+                  onClick={() =>
+                    setStep(variant === "delivery" ? "board" : "part1")
+                  }
                 >
                   空の車を見る
                 </button>
@@ -121,20 +133,24 @@ export function TodayConsole({ inFlow = true }: Props) {
                       ? "帰り荷を載せました。休息の確認は残っています。"
                       : "帰り荷は載せませんでした。確認は残っています。"}
                   </p>
-                  <button
-                    type="button"
-                    className="linkish"
-                    onClick={() => setStep("part3")}
-                  >
-                    分かれ方がどう変わったか
-                  </button>
-                  <button
-                    type="button"
-                    className="linkish"
-                    onClick={() => setStep("part4")}
-                  >
-                    規模の話
-                  </button>
+                  {variant === "pitch" ? (
+                    <>
+                      <button
+                        type="button"
+                        className="linkish"
+                        onClick={() => setStep("part3")}
+                      >
+                        分かれ方がどう変わったか
+                      </button>
+                      <button
+                        type="button"
+                        className="linkish"
+                        onClick={() => setStep("part4")}
+                      >
+                        規模の話
+                      </button>
+                    </>
+                  ) : null}
                 </div>
               )}
             </div>
