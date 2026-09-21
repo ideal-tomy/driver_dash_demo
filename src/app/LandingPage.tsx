@@ -62,7 +62,7 @@ export function LandingPage() {
               {now.body.map((p) => (
                 <p key={p}>{p}</p>
               ))}
-              <p className="lp-hint">{now.note}</p>
+              <p className="lp-note">{now.note}</p>
             </div>
             <div className="lp-figure">
               <StoryStage mode="part1" />
@@ -101,6 +101,7 @@ export function LandingPage() {
                   </ul>
                 </div>
               </div>
+              <p className="lp-note is-white">{changed.note}</p>
             </div>
             <div className="lp-figure">
               <StoryStage mode="part3" />
@@ -116,7 +117,7 @@ export function LandingPage() {
               {grow.body.map((p) => (
                 <p key={p}>{p}</p>
               ))}
-              <p className="lp-hint">{grow.note}</p>
+              <p className="lp-note">{grow.note}</p>
             </div>
             <div className="lp-figure">
               <StoryStage mode="part4" />
@@ -156,6 +157,7 @@ export function LandingPage() {
 
         <section className="lp-end" aria-labelledby="lp-end-title">
           <h2 id="lp-end-title">{end.title}</h2>
+          <p>{end.body}</p>
           <Link className="lp-btn" to="/board">
             {end.cta}
           </Link>

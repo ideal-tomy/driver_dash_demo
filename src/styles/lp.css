@@ -161,8 +161,7 @@
 .lp-figure .step,
 .lp-figure .cap,
 .lp-figure .stage,
-.lp-figure .nav,
-.lp-figure .note {
+.lp-figure .nav {
   margin-left: 8px;
   margin-right: 8px;
 }
@@ -176,6 +175,17 @@
   padding-right: 4px;
 }
 
+.lp-figure .cap b,
+.lp-figure .cap p,
+.lp-figure .cap .cap-em {
+  width: 100%;
+  max-width: none;
+  text-wrap: wrap;
+  word-break: normal;
+  line-break: loose;
+  overflow-wrap: normal;
+}
+
 .lp-figure .nav {
   padding-left: 8px;
   padding-right: 8px;
@@ -186,6 +196,21 @@
   font-size: 14px;
   line-height: 1.7;
   color: var(--lp-muted);
+}
+
+.lp-note {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border: 1px solid var(--lp-line);
+  background: #f4f4f0;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--lp-muted);
+}
+
+.lp-note.is-white {
+  background: #fff;
 }
 
 .lp-compare {

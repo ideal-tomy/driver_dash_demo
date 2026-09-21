@@ -157,7 +157,10 @@ body {
   font-size: 15px;
   line-height: 1.6;
   color: #1f1f1d;
-  text-wrap: balance;
+  text-wrap: wrap;
+  word-break: normal;
+  line-break: loose;
+  overflow-wrap: normal;
 }
 
 .cap-above b {
@@ -170,13 +173,21 @@ body {
   margin: 6px 0 0;
   font-size: 12.5px;
   line-height: 1.75;
-  color: #6b6b66;
-  text-wrap: balance;
+  color: #1f1f1d;
+  text-wrap: wrap;
+  word-break: normal;
+  line-break: loose;
+  overflow-wrap: normal;
 }
 
 .cap-above p {
   font-size: 13.5px;
   margin-top: 8px;
+}
+
+.cap-em {
+  font-weight: 700;
+  color: #d9480f;
 }
 
 .cap.is-flash b {

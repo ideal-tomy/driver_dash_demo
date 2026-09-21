@@ -17,7 +17,7 @@ type Props = {
   returnUrl?: string | null;
 };
 
-export function TodayConsole({ returnUrl = null }: Props) {
+export function TodayConsole({ returnUrl: _returnUrl = null }: Props) {
   const {
     board,
     consoleTab,
