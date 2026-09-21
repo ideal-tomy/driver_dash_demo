@@ -1,23 +1,16 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { BoardApp } from "./app/BoardApp";
-import { DemoFlow } from "./app/DemoFlow";
-import { DemoProvider } from "./state/DemoStore";
-
-function DemoShell() {
-  return (
-    <DemoProvider>
-      <DemoFlow />
-    </DemoProvider>
-  );
-}
+import { LandingPage } from "./app/LandingPage";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<DemoShell />} />
+        <Route path="/" element={<Navigate to="/board" replace />} />
         <Route path="/board" element={<BoardApp />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/lp" element={<LandingPage />} />
+        <Route path="/story/*" element={<Navigate to="/lp" replace />} />
+        <Route path="*" element={<Navigate to="/board" replace />} />
       </Routes>
     </BrowserRouter>
   );

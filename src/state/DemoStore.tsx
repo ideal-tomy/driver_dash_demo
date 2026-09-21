@@ -21,7 +21,7 @@ import type {
   RulesSnapshot,
 } from "../knowledge/types";
 
-export type FlowStep = "today" | "part1" | "board" | "part3" | "part4";
+export type FlowStep = "today" | "board";
 
 export type ConsoleTab = "today" | "orders" | "board" | "alerts";
 

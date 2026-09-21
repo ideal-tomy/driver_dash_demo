@@ -12,14 +12,18 @@ function DeliveryInner() {
 
   return (
     <>
-      <ProgressBar variant="delivery" />
+      <header className="bar">
+        <div className="barin wide">
+          <b>配車</b>
+          <nav className="bar-nav">
+            {returnUrl ? <a href={returnUrl}>← 紹介へ</a> : null}
+            <Link to="/lp">この画面の意味</Link>
+          </nav>
+        </div>
+      </header>
+      <ProgressBar />
       <div className="wrap wide" style={{ paddingTop: 8 }}>
-        {step === "today" ||
-        step === "part1" ||
-        step === "part3" ||
-        step === "part4" ? (
-          <TodayConsole variant="delivery" returnUrl={returnUrl} />
-        ) : null}
+        {step === "today" ? <TodayConsole returnUrl={returnUrl} /> : null}
         {step === "board" ? (
           <BoardExperience
             onBack={() => {
@@ -31,13 +35,6 @@ function DeliveryInner() {
               setStep("today");
             }}
           />
-        ) : null}
-        {!returnUrl ? (
-          <div className="foot">
-            <Link to="/" style={{ color: "#6B6B66" }}>
-              商談フローに戻る
-            </Link>
-          </div>
         ) : null}
       </div>
     </>

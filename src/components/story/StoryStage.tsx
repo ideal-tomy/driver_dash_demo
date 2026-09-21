@@ -137,6 +137,10 @@ export function StoryStage({
                 setCapS(CAP4[n - 1][1]);
                 return;
               }
+              setC4(1);
+              eng4.current?.apply(1);
+              setCapT(CAP4[0][0]);
+              setCapS(CAP4[0][1]);
               onPart4Done?.();
             }}
           >
@@ -144,15 +148,7 @@ export function StoryStage({
           </button>
         </div>
         <div className="note">
-          <b>増えるもの</b>
-          ：判断する担当者、例外の件数、協力会社とのやり取り。
-          <br />
-          <b>増え方が変わるもの</b>
-          ：依頼を集める手間、予定を見る手間、記録の置き場。
-          <br />
-          10倍は仮の数字です。車を10倍にするより、
-          <b>扱う依頼と協力会社の数が増える</b>
-          形になると見ています。
+          人が増えると、隣に聞く回数が増えます。同じ表を見ると、聞く先はその表だけになります。数字は説明用です。
         </div>
       </div>
     );
@@ -205,6 +201,10 @@ export function StoryStage({
                 setCapS(CAP3[n - 1][1]);
                 return;
               }
+              setC3(1);
+              eng1.current?.apply3(1, false);
+              setCapT(CAP3[0][0]);
+              setCapS(CAP3[0][1]);
               onPart3Done?.();
             }}
           >
@@ -212,8 +212,7 @@ export function StoryStage({
           </button>
         </div>
         <div className="note">
-          第1部と同じ図です。担当の分け方も、依頼の数も変えていません。
-          変えたのは、<b>全員が同じ一覧を見ている</b>という条件だけです。
+          担当の分け方は変えていません。変えたのは、全員が同じ表を見ていることだけです。
         </div>
       </div>
     );
@@ -265,6 +264,10 @@ export function StoryStage({
               setCapS(CAP1[n - 1][1]);
               return;
             }
+            setCur(1);
+            eng1.current?.apply(1, false);
+            setCapT(CAP1[0][0]);
+            setCapS(CAP1[0][1]);
             onPart1Done?.();
           }}
         >
@@ -272,10 +275,7 @@ export function StoryStage({
         </button>
       </div>
       <div className="note">
-        <b>この図の数字は仮です。</b>
-        担当者5名（地域ごと）と1日20件は、お聞きした内容をそのまま置いています。
-        自社の車で運ぶ割合は80%として描いています。
-        実際の内訳をお聞きして、この図の本数と件数を直します。
+        この図の人数と件数は仮です。担当5人、1日20件として描いています。
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useDemo, type ConsoleTab } from "../state/DemoStore";
 import { DispatchBoard } from "../components/board/DispatchBoard";
 import { OrderDetail } from "../components/orders/OrderDetail";
@@ -13,15 +14,10 @@ const TABS: { id: ConsoleTab; label: string }[] = [
 ];
 
 type Props = {
-  /** pitch=商談フロー / delivery=厳選版・/board 納品入口 */
-  variant?: "pitch" | "delivery";
   returnUrl?: string | null;
 };
 
-export function TodayConsole({
-  variant = "pitch",
-  returnUrl = null,
-}: Props) {
+export function TodayConsole({ returnUrl = null }: Props) {
   const {
     board,
     consoleTab,
@@ -38,7 +34,6 @@ export function TodayConsole({
 
   const decided = returnDecision !== "pending";
   const faxAlerts = orders.filter((o) => o.needsConfirm);
-  const showCta = variant === "pitch" || variant === "delivery";
 
   return (
     <div className="console">
@@ -47,11 +42,6 @@ export function TodayConsole({
           <h1>配車</h1>
           <p>{board.dateLabel}</p>
         </div>
-        {returnUrl ? (
-          <a className="console-back" href={returnUrl}>
-            ← 紹介へ
-          </a>
-        ) : null}
       </header>
 
       <nav className="console-tabs" aria-label="画面">
@@ -93,7 +83,7 @@ export function TodayConsole({
 
           <DispatchDesk />
 
-          {(dutyAlerts.length > 0 || faxAlerts.length > 0) ? (
+          {dutyAlerts.length > 0 || faxAlerts.length > 0 ? (
             <div className="console-section">
               <div className="console-label">確認</div>
               <ul className="alert-list">
@@ -114,47 +104,28 @@ export function TodayConsole({
             </div>
           ) : null}
 
-          {showCta ? (
-            <div className="console-cta">
-              {!decided ? (
-                <button
-                  type="button"
-                  className="btn"
-                  onClick={() =>
-                    setStep(variant === "delivery" ? "board" : "part1")
-                  }
-                >
-                  空の車を見る
-                </button>
-              ) : (
-                <div className="console-after">
-                  <p>
-                    {returnDecision === "accepted"
-                      ? "帰り荷を載せました。休息の確認は残っています。"
-                      : "帰り荷は載せませんでした。確認は残っています。"}
-                  </p>
-                  {variant === "pitch" ? (
-                    <>
-                      <button
-                        type="button"
-                        className="linkish"
-                        onClick={() => setStep("part3")}
-                      >
-                        分かれ方がどう変わったか
-                      </button>
-                      <button
-                        type="button"
-                        className="linkish"
-                        onClick={() => setStep("part4")}
-                      >
-                        規模の話
-                      </button>
-                    </>
-                  ) : null}
-                </div>
-              )}
-            </div>
-          ) : null}
+          <div className="console-cta">
+            {!decided ? (
+              <button
+                type="button"
+                className="btn"
+                onClick={() => setStep("board")}
+              >
+                空の車を見る
+              </button>
+            ) : (
+              <div className="console-after">
+                <p>
+                  {returnDecision === "accepted"
+                    ? "帰り荷を載せました。休息の確認は残っています。"
+                    : "帰り荷は載せませんでした。確認は残っています。"}
+                </p>
+                <Link className="btn ghost" to="/lp" style={{ display: "block", textAlign: "center", textDecoration: "none" }}>
+                  この画面の意味を読む
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       ) : null}
 
