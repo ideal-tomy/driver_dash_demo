@@ -7,10 +7,14 @@ function isEmbedIntro() {
   return new URLSearchParams(window.location.search).get("embed") === "intro";
 }
 
+function isStageView() {
+  return new URLSearchParams(window.location.search).get("view") === "stage";
+}
+
 export default function App() {
   if (isEmbedIntro()) {
     return (
-      <main className="ki-embed-intro">
+      <main className={`ki-embed-intro${isStageView() ? " ki-embed-stage" : ""}`}>
         <DemoIntro />
       </main>
     );

@@ -4,6 +4,7 @@ export type DeviceId = "today" | "board" | "alerts";
 export const scenes: {
   title: string;
   caption: string;
+  motion: string;
   duration: number;
   camera: Camera;
   stars: readonly DeviceId[];
@@ -11,6 +12,7 @@ export const scenes: {
   {
     title: "件数を見る",
     caption: "未処理と空で戻る車が、同じ画面に並びます。",
+    motion: "件数を見る",
     duration: 5000,
     camera: [158, 176, 1.22],
     stars: ["today"],
@@ -18,6 +20,7 @@ export const scenes: {
   {
     title: "依頼を一覧する",
     caption: "入口の違う依頼も、一つの一覧です。",
+    motion: "依頼を一覧する",
     duration: 5000,
     camera: [158, 176, 1.18],
     stars: ["today"],
@@ -25,6 +28,7 @@ export const scenes: {
   {
     title: "空の車を見る",
     caption: "空で戻る車の近くに、帰り荷の候補が出ます。",
+    motion: "空の車の近くへ",
     duration: 4500,
     camera: [306, 176, 0.96],
     stars: ["today", "board"],
@@ -32,6 +36,7 @@ export const scenes: {
   {
     title: "載せるかを決める",
     caption: "候補は出します。載せるかは人が決めます。",
+    motion: "載せるかを決める",
     duration: 5500,
     camera: [454, 176, 1.18],
     stars: ["board"],
@@ -39,6 +44,7 @@ export const scenes: {
   {
     title: "確認は残る",
     caption: "載せても、休息の確認は残ります。",
+    motion: "確認は残る",
     duration: 5500,
     camera: [604, 176, 0.96],
     stars: ["board", "alerts"],
